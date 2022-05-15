@@ -2,11 +2,12 @@ package onezerodan.cocktailbot;
 
 import onezerodan.cocktailbot.model.Cocktail;
 import onezerodan.cocktailbot.repository.CocktailRepository;
-import onezerodan.cocktailbot.service.CocktailService;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 class CocktailBotApplicationTests {
@@ -29,12 +30,31 @@ class CocktailBotApplicationTests {
         cocktailRepository.save(cocktail);
     }
 
-    @Autowired
-    private CocktailService cocktailService;
+    //@Autowired
+    //CocktailService cocktailService;
+
+
 
     @Test
-    void checkCocktailServiceNotNull() {
-        assert cocktailService != null;
+    void checkIfCocktailExistsByName() {
+        System.out.println(cocktailRepository.existsByName("ылвоадыловдаыовдлмты"));
+    }
+
+    @Test
+    void findCocktailByIngredients() {
+        List<String> ingredients = new ArrayList<>();
+        ingredients.add("тоник");
+        System.out.println(
+                cocktailRepository.findCocktailByIngredientsIn(ingredients));
+    }
+
+    @Test
+    void findCocktailByName() {
+        System.out.println(
+                cocktailRepository
+                        .findCocktailByName("Голубая лагуна")
+                        .toString()
+        );
     }
 
 

@@ -1,6 +1,6 @@
 package onezerodan.cocktailbot;
 
-import onezerodan.cocktailbot.parser.Parser;
+import onezerodan.cocktailbot.job.Parser;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,8 +10,8 @@ import java.io.IOException;
 
 
 //@EntityScan(basePackages = {"onezerodan.cocktailbot.model"})
-@EnableJpaRepositories(basePackages="onezerodan.cocktailbot.repository")
-@ComponentScan(basePackages = "onezerodan.cocktailbot.service")
+//@EnableJpaRepositories(basePackages="onezerodan.cocktailbot.repository")
+//@ComponentScan(basePackages = "onezerodan.cocktailbot.service")
 @SpringBootApplication()
 public class CocktailBotApplication  {
 
@@ -20,8 +20,8 @@ public class CocktailBotApplication  {
     public static void main(String[] args) throws IOException {
         SpringApplication.run(CocktailBotApplication.class, args);
 
-        Parser parser = new Parser();
-        parser.parse("https://ru.inshaker.com/cocktails?random_page=59");
+        //Parser parser = new Parser();
+        //parser.parse("https://ru.inshaker.com/cocktails?random_page=59");
         //repository.save(new Cocktail("cocktail"));
     }
 

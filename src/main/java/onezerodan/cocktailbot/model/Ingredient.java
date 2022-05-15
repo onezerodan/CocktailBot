@@ -1,15 +1,33 @@
 package onezerodan.cocktailbot.model;
 
+import com.sun.istack.NotNull;
+
 import javax.persistence.*;
 
 @Entity(name = "ingredient")
-//@Table(name = "ingredients")
+
 public class Ingredient {
 
+
     @Id
+    @SequenceGenerator(
+            name = "ingredient_sequence",
+            sequenceName = "ingredient_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "ingredient_sequence"
+    )
     private Long id;
+
+
+
+    @NotNull
     private String name;
+    @NotNull
     private int amount;
+    @NotNull
     private String unit;
 
     public Ingredient(String name, int amount, String unit) {
@@ -47,7 +65,10 @@ public class Ingredient {
     }
 
     @ManyToOne
-    @JoinColumn(name = "cocktail_name")
+    @JoinColumns({
+            @JoinColumn(name = "cocktail_name", referencedColumnName = "name"),
+            @JoinColumn(name = "cocktail_id", referencedColumnName = "id")
+    })
     private Cocktail cocktail;
 
 

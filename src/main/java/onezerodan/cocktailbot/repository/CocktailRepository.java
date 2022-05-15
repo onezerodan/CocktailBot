@@ -1,14 +1,20 @@
 package onezerodan.cocktailbot.repository;
 
 import onezerodan.cocktailbot.model.Cocktail;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.JpaRepository;
+import onezerodan.cocktailbot.model.Ingredient;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface CocktailRepository extends CrudRepository<Cocktail, Long> {
+
+    boolean existsByName(String name);
+
+    String findCocktailByIngredientsIn(List<String> ingredients);
+
+    Cocktail findCocktailByName(String name);
+
 
 }

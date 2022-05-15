@@ -1,55 +1,74 @@
-package onezerodan.cocktailbot.parser;
+package onezerodan.cocktailbot.job;
 
 import onezerodan.cocktailbot.model.Cocktail;
+import onezerodan.cocktailbot.model.CocktailTag;
 import onezerodan.cocktailbot.model.Ingredient;
-import onezerodan.cocktailbot.service.CocktailService;
+import onezerodan.cocktailbot.repository.CocktailRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 @Component
 public class Parser {
 
+    //CocktailService cocktailService;
+    CocktailRepository cocktailRepository;
 
-    @Autowired
-    private CocktailService service;
+    public Parser(CocktailRepository cocktailRepository) {
+        this.cocktailRepository = cocktailRepository;
+    }
+
 
 
     public void parse(String url) throws IOException {
 
-        System.out.println(service);
+        System.out.println(cocktailRepository);
 
 
 
         Document doc = Jsoup.connect(url)
-                .userAgent("Chrome/4.0.249.0 Safari/532.5")
+                .userAgent("Opera")
                 .referrer("http://www.google.com")
-                .timeout(10 * 1000)
+                .timeout(0)
                 .get();
 
         Elements elements = doc.getElementsByClass("cocktail-item");
 
         int count = 0;
         for (Element cocktailElement : elements) {
-            Cocktail cocktail = new Cocktail(cocktailElement.getElementsByClass("cocktail-item-name").text());
+            String cocktailName = cocktailElement.getElementsByClass("cocktail-item-name").text();
+            if (cocktailRepository.existsByName(cocktailName)){
+                continue;
+            }
+            Cocktail cocktail = new Cocktail(cocktailName);
             System.out.println("-----------------------------");
             System.out.println(cocktailElement.getElementsByClass("cocktail-item-name").text() +
                      " (" + "https://ru.inshaker.com" + cocktailElement.getElementsByClass("cocktail-item-preview").attr("href") + ")");
 
-            Document cocktailDoc = Jsoup.connect("https://ru.inshaker.com" + cocktailElement.getElementsByClass("cocktail-item-preview").attr("href"))
-                    .userAgent("Chrome/4.0.249.0 Safari/532.5")
-                    .referrer("http://www.google.com")
-                    .timeout(10 * 1000)
-                    .get();
+            Document cocktailDoc = null;
 
+            try {
+                cocktailDoc = Jsoup.connect("https://ru.inshaker.com" + cocktailElement.getElementsByClass("cocktail-item-preview").attr("href"))
+                        .userAgent("Opera")
+                        .referrer("https://www.google.com")
+                        .timeout(0)
+                        .get();
+            }
+            catch (SocketTimeoutException e) {
+                System.out.println("ERROR");
+            }
+
+
+            assert cocktailDoc != null;
             Element ingredientsTable = cocktailDoc.getElementsByClass("ingredient-tables").select("table").first();
 
             System.out.println("Ингредиенты: ");
+            assert ingredientsTable != null;
             Elements ingredients = ingredientsTable.getElementsByClass("name");
             for (Element ingredientsElement : ingredients) {
                 String ingredientName = ingredientsElement.text();
@@ -60,6 +79,14 @@ public class Parser {
                 cocktail.addIngredient(ingredient);
                 System.out.println(ingredientName + " " + ingredientAmount + " " + ingredientUnit);
 
+            }
+
+            System.out.println("Tags: +++++++++++++");
+            Elements tagElements = cocktailDoc.getElementsByClass("tag");
+            for (Element tagElement : tagElements) {
+                String tagName = tagElement.text();
+                System.out.println(tagName);
+                cocktail.addTag(new CocktailTag(tagName));
             }
 
             Element stepsTable = cocktailDoc.getElementsByClass("steps").first();
@@ -76,6 +103,7 @@ public class Parser {
             cocktail.setRecipe(recipe);
 
 
+            cocktailRepository.save(cocktail);
             //this.repository.save(cocktail);
             //System.out.println(repository);
 
