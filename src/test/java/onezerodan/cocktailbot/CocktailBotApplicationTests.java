@@ -26,7 +26,7 @@ class CocktailBotApplicationTests {
 
     @Test
     void checkCocktailRepositorySave() {
-        Cocktail cocktail = new Cocktail("cocktail");
+        Cocktail cocktail = new Cocktail();
         cocktailRepository.save(cocktail);
     }
 

@@ -4,113 +4,156 @@ import onezerodan.cocktailbot.model.Cocktail;
 import onezerodan.cocktailbot.model.CocktailTag;
 import onezerodan.cocktailbot.model.Ingredient;
 import onezerodan.cocktailbot.repository.CocktailRepository;
+import org.apache.tomcat.jni.Time;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import onezerodan.cocktailbot.util.PropertiesLoader;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class Parser {
 
-    //CocktailService cocktailService;
+    Logger log = LoggerFactory.getLogger(Parser.class);
     CocktailRepository cocktailRepository;
+    Properties properties =  new PropertiesLoader().getProperties();
 
     public Parser(CocktailRepository cocktailRepository) {
         this.cocktailRepository = cocktailRepository;
     }
 
+    public List<Cocktail> parse() throws IOException, InterruptedException {
 
+        List <Cocktail> result = new ArrayList<>();
 
-    public void parse(String url) throws IOException {
-
-        System.out.println(cocktailRepository);
-
-
-
-        Document doc = Jsoup.connect(url)
-                .userAgent("Opera")
+        Document doc = Jsoup
+                .connect(properties.getProperty("fullCocktailLink"))
+                .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
                 .referrer("http://www.google.com")
                 .timeout(0)
                 .get();
 
         Elements elements = doc.getElementsByClass("cocktail-item");
+        int cocktailAmount = elements.size();
+        int cocktailCount = 1;
 
-        int count = 0;
+
+
         for (Element cocktailElement : elements) {
-            String cocktailName = cocktailElement.getElementsByClass("cocktail-item-name").text();
+            Cocktail cocktail = new Cocktail();
+
+            String cocktailName = getCocktailName(cocktailElement);
+
+
             if (cocktailRepository.existsByName(cocktailName)){
+                cocktailCount++;
+                log.warn(cocktailName + " Exists. Skipping.");
                 continue;
             }
-            Cocktail cocktail = new Cocktail(cocktailName);
-            System.out.println("-----------------------------");
-            System.out.println(cocktailElement.getElementsByClass("cocktail-item-name").text() +
-                     " (" + "https://ru.inshaker.com" + cocktailElement.getElementsByClass("cocktail-item-preview").attr("href") + ")");
+            cocktail.setName(cocktailName);
+
+
+
 
             Document cocktailDoc = null;
 
             try {
-                cocktailDoc = Jsoup.connect("https://ru.inshaker.com" + cocktailElement.getElementsByClass("cocktail-item-preview").attr("href"))
-                        .userAgent("Opera")
+                cocktailDoc = Jsoup.connect(properties.getProperty("domain") + cocktailElement.getElementsByClass("cocktail-item-preview").attr("href"))
+                        .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
                         .referrer("https://www.google.com")
-                        .timeout(0)
+                        .timeout(10 * 1000)
                         .get();
-            }
-            catch (SocketTimeoutException e) {
-                System.out.println("ERROR");
+            } catch (SocketTimeoutException e) {
+                log.error("Error parsing " + cocktailName + ".\n Retrying...");
+                TimeUnit.SECONDS.sleep(10);
+                while (cocktailDoc == null) {
+                    cocktailDoc = Jsoup.connect(properties.getProperty("domain") + cocktailElement.getElementsByClass("cocktail-item-preview").attr("href"))
+                            .userAgent("Opera")
+                            .referrer("https://www.google.com")
+                            .timeout(10 * 1000)
+                            .get();
+                    TimeUnit.SECONDS.sleep(1);
+                }
+                //continue;
             }
 
 
-            assert cocktailDoc != null;
             Element ingredientsTable = cocktailDoc.getElementsByClass("ingredient-tables").select("table").first();
 
-            System.out.println("Ингредиенты: ");
-            assert ingredientsTable != null;
-            Elements ingredients = ingredientsTable.getElementsByClass("name");
-            for (Element ingredientsElement : ingredients) {
-                String ingredientName = ingredientsElement.text();
-                int ingredientAmount = Integer.parseInt(ingredientsElement.nextElementSibling().text());
-                String ingredientUnit = ingredientsElement.nextElementSibling().nextElementSibling().text();
+            cocktail.setIngredients(getCocktailIngredients(ingredientsTable));
 
-                Ingredient ingredient = new Ingredient(ingredientName, ingredientAmount, ingredientUnit);
-                cocktail.addIngredient(ingredient);
-                System.out.println(ingredientName + " " + ingredientAmount + " " + ingredientUnit);
 
-            }
-
-            System.out.println("Tags: +++++++++++++");
             Elements tagElements = cocktailDoc.getElementsByClass("tag");
-            for (Element tagElement : tagElements) {
-                String tagName = tagElement.text();
-                System.out.println(tagName);
-                cocktail.addTag(new CocktailTag(tagName));
-            }
+            cocktail.setTags(getCocktailTags(tagElements));
 
             Element stepsTable = cocktailDoc.getElementsByClass("steps").first();
             Elements steps = stepsTable.getElementsByTag("li");
-            int stepsCount = 1;
-            String recipe = "";
-            System.out.println("Рецепт:");
-            for (Element stepsElement : steps) {
-                recipe += stepsCount + " " + stepsElement.text() + "\n";
-                stepsCount++;
-            }
-            count++;
 
-            cocktail.setRecipe(recipe);
+            cocktail.setRecipe(getCocktailRecipe(steps));
 
 
-            cocktailRepository.save(cocktail);
-            //this.repository.save(cocktail);
-            //System.out.println(repository);
+            result.add(cocktail);
 
+            log.info(cocktailCount + "/" + cocktailAmount + " " +
+                    "[Parsed] " + cocktail.getName());
+            cocktailCount++;
 
         }
-        System.out.println("Total cocktails: " + count);
+        return result;
 
+    }
+
+    private String getCocktailName(Element cocktailElement) {
+        return cocktailElement.getElementsByClass("cocktail-item-name").text();
+    }
+
+    private List<Ingredient> getCocktailIngredients(Element ingredientsTable) {
+
+        List<Ingredient> result = new ArrayList<>();
+        Elements ingredients = ingredientsTable.getElementsByClass("name");
+
+        for (Element ingredientsElement : ingredients) {
+            String ingredientName = ingredientsElement.text();
+            int ingredientAmount = Integer.parseInt(ingredientsElement.nextElementSibling().text());
+            String ingredientUnit = ingredientsElement.nextElementSibling().nextElementSibling().text();
+
+            Ingredient ingredient = new Ingredient(ingredientName, ingredientAmount, ingredientUnit);
+            result.add(ingredient);
+        }
+        return result;
+    }
+
+    private List<CocktailTag> getCocktailTags(Elements tagElements) {
+
+        List<CocktailTag> result = new ArrayList<>();
+
+        for (Element tagElement : tagElements) {
+            String tagName = tagElement.text();
+            result.add(new CocktailTag(tagName));
+        }
+        return result;
+    }
+
+    private String getCocktailRecipe(Elements steps) {
+
+        int stepsCount = 1;
+        StringBuilder recipe = new StringBuilder();
+        for (Element stepsElement : steps) {
+            recipe.append(stepsCount).append(" ").append(stepsElement.text()).append("\n");
+            stepsCount++;
+        }
+        return recipe.toString();
     }
 
 

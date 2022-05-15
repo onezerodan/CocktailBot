@@ -20,9 +20,6 @@ public class CocktailBotApplication  {
     public static void main(String[] args) throws IOException {
         SpringApplication.run(CocktailBotApplication.class, args);
 
-        //Parser parser = new Parser();
-        //parser.parse("https://ru.inshaker.com/cocktails?random_page=59");
-        //repository.save(new Cocktail("cocktail"));
     }
 
 

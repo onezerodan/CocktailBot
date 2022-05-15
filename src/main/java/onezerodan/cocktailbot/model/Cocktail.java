@@ -62,9 +62,12 @@ public class Cocktail {
     @Column(length=1024)
     private String recipe;
 
-    public Cocktail(String name) {
-        this.name = name;
+    public List<CocktailTag> getTags() {
+        return tags;
+    }
 
+    public void setTags(List<CocktailTag> tags) {
+        this.tags = tags;
     }
 
     public Cocktail() {
@@ -78,6 +81,8 @@ public class Cocktail {
                 ", recipe='" + recipe + '\'' +
                 '}';
     }
+
+    public Long getId() { return id; }
 
     public String getName() {
         return name;
