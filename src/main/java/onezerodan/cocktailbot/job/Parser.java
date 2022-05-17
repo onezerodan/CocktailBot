@@ -4,7 +4,6 @@ import onezerodan.cocktailbot.model.Cocktail;
 import onezerodan.cocktailbot.model.CocktailTag;
 import onezerodan.cocktailbot.model.Ingredient;
 import onezerodan.cocktailbot.repository.CocktailRepository;
-import org.apache.tomcat.jni.Time;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import onezerodan.cocktailbot.util.PropertiesLoader;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -115,7 +113,7 @@ public class Parser {
     }
 
     private String getCocktailName(Element cocktailElement) {
-        return cocktailElement.getElementsByClass("cocktail-item-name").text();
+        return cocktailElement.getElementsByClass("cocktail-item-name").text().toLowerCase();
     }
 
     private List<Ingredient> getCocktailIngredients(Element ingredientsTable) {
@@ -124,9 +122,9 @@ public class Parser {
         Elements ingredients = ingredientsTable.getElementsByClass("name");
 
         for (Element ingredientsElement : ingredients) {
-            String ingredientName = ingredientsElement.text();
+            String ingredientName = ingredientsElement.text().toLowerCase();
             int ingredientAmount = Integer.parseInt(ingredientsElement.nextElementSibling().text());
-            String ingredientUnit = ingredientsElement.nextElementSibling().nextElementSibling().text();
+            String ingredientUnit = ingredientsElement.nextElementSibling().nextElementSibling().text().toLowerCase();
 
             Ingredient ingredient = new Ingredient(ingredientName, ingredientAmount, ingredientUnit);
             result.add(ingredient);
@@ -139,7 +137,7 @@ public class Parser {
         List<CocktailTag> result = new ArrayList<>();
 
         for (Element tagElement : tagElements) {
-            String tagName = tagElement.text();
+            String tagName = tagElement.text().toLowerCase();
             result.add(new CocktailTag(tagName));
         }
         return result;
@@ -150,7 +148,7 @@ public class Parser {
         int stepsCount = 1;
         StringBuilder recipe = new StringBuilder();
         for (Element stepsElement : steps) {
-            recipe.append(stepsCount).append(" ").append(stepsElement.text()).append("\n");
+            recipe.append(stepsCount).append(". ").append(stepsElement.text()).append("\n");
             stepsCount++;
         }
         return recipe.toString();
