@@ -2,6 +2,8 @@ package onezerodan.cocktailbot.model;
 
 import com.sun.istack.NotNull;
 import onezerodan.cocktailbot.model.id.CocktailId;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -34,12 +36,14 @@ public class Cocktail {
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
+
     )
     @JoinColumns({
             @JoinColumn(name = "cocktail_id", referencedColumnName = "id"),
             @JoinColumn(name = "cocktail_name",     referencedColumnName = "name")
     })
     @NotNull
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Ingredient> ingredients = new ArrayList<>();
 
     @OneToMany(
@@ -57,6 +61,7 @@ public class Cocktail {
             @JoinColumn(name = "cocktail_name",     referencedColumnName = "name")
     })
     @NotNull
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<CocktailTag> tags = new ArrayList<>();
 
     @Column(length=1024)
@@ -76,10 +81,31 @@ public class Cocktail {
 
     @Override
     public String toString() {
-        return "Cocktail{" +
-                ", name='" + name + '\'' +
-                ", recipe='" + recipe + '\'' +
-                '}';
+        StringBuilder ingredientsStr = new StringBuilder();
+        for (Ingredient ingredient : getIngredients()) {
+            ingredientsStr
+                    .append("• ")
+                    .append(ingredient.getName())
+                    .append(" ")
+                    .append(ingredient.getAmount())
+                    .append(ingredient.getUnit())
+                    .append("\n");
+        }
+        StringBuilder tagsStr = new StringBuilder();
+        for (CocktailTag tag : tags) {
+            tagsStr
+                    .append(tag.getName())
+                    .append(" / ");
+        }
+        StringBuilder answer = new StringBuilder();
+        answer.append(name).append("\n\n")
+                .append("Ингридиенты:").append("\n")
+                .append(ingredientsStr).append("\n")
+                .append("Способ приготовления:").append("\n")
+                .append(recipe).append("\n")
+                .append("Тэги: ").append("\n")
+                .append(tagsStr);
+        return answer.toString();
     }
 
     public Long getId() { return id; }

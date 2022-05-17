@@ -1,6 +1,7 @@
 package onezerodan.cocktailbot;
 
 import onezerodan.cocktailbot.model.Cocktail;
+import onezerodan.cocktailbot.model.Ingredient;
 import onezerodan.cocktailbot.repository.CocktailRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,21 @@ class CocktailBotApplicationTests {
 
     @Test
     void checkIfCocktailExistsByName() {
-        System.out.println(cocktailRepository.existsByName("ылвоадыловдаыовдлмты"));
+        System.out.println(cocktailRepository.existsByName("МаргаРИта"));
+    }
+
+    @Test
+    void findByNameIgnoreCase() {
+        System.out.println(cocktailRepository.findByName("Президент").toString());
     }
 
     @Test
     void findCocktailByIngredients() {
-        List<String> ingredients = new ArrayList<>();
-        ingredients.add("тоник");
+        List<String> ingredientNames = new ArrayList<>();
+        ingredientNames.add("ликер корицы");
+        ingredientNames.add("лимонный сок");
         System.out.println(
-                cocktailRepository.findCocktailByIngredientsIn(ingredients));
+                cocktailRepository.findByIngredientsName(ingredientNames));
     }
 
     @Test
