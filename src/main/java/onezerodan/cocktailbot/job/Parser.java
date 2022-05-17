@@ -4,6 +4,7 @@ import onezerodan.cocktailbot.model.Cocktail;
 import onezerodan.cocktailbot.model.CocktailTag;
 import onezerodan.cocktailbot.model.Ingredient;
 import onezerodan.cocktailbot.repository.CocktailRepository;
+import onezerodan.cocktailbot.service.CocktailService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,11 +26,17 @@ public class Parser {
 
     Logger log = LoggerFactory.getLogger(Parser.class);
     CocktailRepository cocktailRepository;
+    CocktailService cocktailService;
     Properties properties =  new PropertiesLoader().getProperties();
 
+    /*
     public Parser(CocktailRepository cocktailRepository) {
         this.cocktailRepository = cocktailRepository;
     }
+
+     */
+    public Parser(CocktailService cocktailService) {this.cocktailService = cocktailService; }
+
 
     public List<Cocktail> parse() throws IOException, InterruptedException {
 
@@ -54,7 +61,7 @@ public class Parser {
             String cocktailName = getCocktailName(cocktailElement);
 
 
-            if (cocktailRepository.existsByName(cocktailName)){
+            if (cocktailService.existsByName(cocktailName)){
                 cocktailCount++;
                 log.warn(cocktailName + " Exists. Skipping.");
                 continue;

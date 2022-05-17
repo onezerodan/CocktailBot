@@ -3,6 +3,7 @@ package onezerodan.cocktailbot.controller;
 import onezerodan.cocktailbot.job.Parser;
 import onezerodan.cocktailbot.model.Cocktail;
 import onezerodan.cocktailbot.repository.CocktailRepository;
+import onezerodan.cocktailbot.service.CocktailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,14 @@ public class CocktailController {
     Logger log = LoggerFactory.getLogger(CocktailController.class);
 
     @Autowired
-    CocktailRepository cocktailRepository;
+    CocktailService cocktailService;
 
     @GetMapping(value = "/updateCocktailDb")
     public void saveCock() throws IOException, InterruptedException {
-        Parser parser = new Parser(cocktailRepository);
+        Parser parser = new Parser(cocktailService);
 
         for (Cocktail cocktail : parser.parse()) {
-            cocktailRepository.save(cocktail);
+            cocktailService.save(cocktail);
         }
         //cocktailRepository.saveAll(parser.parse());
         log.info("Cocktails saved to database.");

@@ -16,7 +16,12 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
     boolean existsByName(String name);
 
     @Query( value = "select cocktail_name from ingredient where name in :ingredients", nativeQuery = true)
-    List<String> findByIngredientsName (@Param("ingredients") List<String> ingredientNames);
+    List<String> findByIngredientsName (@Param("ingredients") List<String> ingredients);
+
+    @Query (value = "select cocktail_name from ingredient " +
+            "where name in :ingredients " +
+            "group by cocktail_name having count(*) = :match", nativeQuery = true)
+    List<String> findByIngredientsNameAll (@Param("ingredients") List<String> ingredients, @Param("match") int match);
 
     List<Cocktail> findAllByIngredientsIn(List<Ingredient> ingredients);
 

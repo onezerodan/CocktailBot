@@ -3,6 +3,7 @@ package onezerodan.cocktailbot;
 import onezerodan.cocktailbot.model.Cocktail;
 import onezerodan.cocktailbot.model.Ingredient;
 import onezerodan.cocktailbot.repository.CocktailRepository;
+import onezerodan.cocktailbot.service.CocktailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,9 @@ class CocktailBotApplicationTests {
     @Autowired
     private CocktailRepository cocktailRepository;
 
+    @Autowired
+    CocktailService cocktailService;
+
     @Test
     void checkCocktailRepositoryNotNull() {
         assert cocktailRepository != null;
@@ -31,8 +35,7 @@ class CocktailBotApplicationTests {
         cocktailRepository.save(cocktail);
     }
 
-    //@Autowired
-    //CocktailService cocktailService;
+
 
 
 
@@ -62,6 +65,15 @@ class CocktailBotApplicationTests {
                         .findCocktailByName("Голубая лагуна")
                         .toString()
         );
+    }
+
+    @Test
+    void findCocktailByIngredientsAll() {
+        List<String> ingredientNames = new ArrayList<>();
+        ingredientNames.add("лайм");
+        ingredientNames.add("лед в кубиках");
+        ingredientNames.add("тоник");
+        System.out.println(cocktailService.findByIngredientsAll(ingredientNames));
     }
 
 
