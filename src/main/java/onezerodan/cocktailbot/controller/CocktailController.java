@@ -27,7 +27,6 @@ public class CocktailController {
         for (Cocktail cocktail : parser.parse()) {
             cocktailService.save(cocktail);
         }
-        //cocktailRepository.saveAll(parser.parse());
         log.info("Cocktails saved to database.");
 
     }

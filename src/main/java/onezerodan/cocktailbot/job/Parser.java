@@ -25,16 +25,9 @@ import java.util.concurrent.TimeUnit;
 public class Parser {
 
     Logger log = LoggerFactory.getLogger(Parser.class);
-    CocktailRepository cocktailRepository;
     CocktailService cocktailService;
     Properties properties =  new PropertiesLoader().getProperties();
 
-    /*
-    public Parser(CocktailRepository cocktailRepository) {
-        this.cocktailRepository = cocktailRepository;
-    }
-
-     */
     public Parser(CocktailService cocktailService) {this.cocktailService = cocktailService; }
 
 
