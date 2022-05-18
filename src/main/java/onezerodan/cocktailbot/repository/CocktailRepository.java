@@ -18,10 +18,8 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
     @Query( value = "select cocktail_name from ingredient where name in :ingredients", nativeQuery = true)
     List<String> findByIngredientsName (@Param("ingredients") List<String> ingredients);
 
-    @Query (value = "select cocktail_name from ingredient " +
-            "where name in :ingredients " +
-            "group by cocktail_name having count(*) = :match", nativeQuery = true)
-    List<String> findByIngredientsNameAll (@Param("ingredients") List<String> ingredients, @Param("match") int match);
+    @Query (value = "select name from cocktail where ingredient_names ~*  :regexp", nativeQuery = true)
+    List<String> findByIngredientsNameAllRegexp(@Param("regexp") String regexp);
 
     List<Cocktail> findAllByIngredientsIn(List<Ingredient> ingredients);
 

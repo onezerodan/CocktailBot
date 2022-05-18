@@ -91,6 +91,8 @@ public class Parser {
 
             cocktail.setIngredients(getCocktailIngredients(ingredientsTable));
 
+            cocktail.setIngredient_names(getCocktailIngredientNames(ingredientsTable));
+
 
             Elements tagElements = cocktailDoc.getElementsByClass("tag");
             cocktail.setTags(getCocktailTags(tagElements));
@@ -114,6 +116,25 @@ public class Parser {
 
     private String getCocktailName(Element cocktailElement) {
         return cocktailElement.getElementsByClass("cocktail-item-name").text().toLowerCase();
+    }
+
+    private String getCocktailIngredientNames(Element ingredientsTable) {
+
+        StringBuilder result = new StringBuilder();
+        String SEPARATOR = "";
+
+        Elements ingredients = ingredientsTable.getElementsByClass("name");
+
+        for (Element ingredientsElement : ingredients) {
+            String ingredientName = ingredientsElement.text().toLowerCase();
+            int ingredientAmount = Integer.parseInt(ingredientsElement.nextElementSibling().text());
+            String ingredientUnit = ingredientsElement.nextElementSibling().nextElementSibling().text().toLowerCase();
+
+            result.append(SEPARATOR)
+                    .append(ingredientName);
+            SEPARATOR = ",";
+        }
+        return result.toString();
     }
 
     private List<Ingredient> getCocktailIngredients(Element ingredientsTable) {

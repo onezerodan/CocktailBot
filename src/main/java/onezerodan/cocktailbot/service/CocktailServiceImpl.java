@@ -20,9 +20,15 @@ public class CocktailServiceImpl implements CocktailService{
     }
 
     @Override
-    public List<String> findByIngredientsAll(List<String> ingredientsName) {
-        int match = ingredientsName.size();
-        return repository.findByIngredientsNameAll(ingredientsName, match);
+    public List<String> findByIngredientsAll(List<String> ingredientsNames) {
+        StringBuilder regexp = new StringBuilder();
+        for (String ingredientName : ingredientsNames) {
+            regexp.append("(?=.*")
+                    .append(ingredientName)
+                    .append(")");
+        }
+
+        return repository.findByIngredientsNameAllRegexp(regexp.toString());
     }
 
     @Override

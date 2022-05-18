@@ -67,6 +67,17 @@ public class Cocktail {
     @Column(length=1024)
     private String recipe;
 
+    public String getIngredient_names() {
+        return ingredient_names;
+    }
+
+    public void setIngredient_names(String ingredient_names) {
+        this.ingredient_names = ingredient_names;
+    }
+
+    private String ingredient_names;
+
+
     public List<CocktailTag> getTags() {
         return tags;
     }
@@ -92,10 +103,12 @@ public class Cocktail {
                     .append("\n");
         }
         StringBuilder tagsStr = new StringBuilder();
+        String tagSeparator = "";
         for (CocktailTag tag : tags) {
             tagsStr
-                    .append(tag.getName())
-                    .append(" / ");
+                    .append(tagSeparator)
+                    .append(tag.getName());
+            tagSeparator = " / ";
         }
         StringBuilder answer = new StringBuilder();
         answer.append(name).append("\n\n")

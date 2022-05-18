@@ -62,7 +62,7 @@ class CocktailBotApplicationTests {
     void findCocktailByName() {
         System.out.println(
                 cocktailRepository
-                        .findCocktailByName("Голубая лагуна")
+                        .findCocktailByName("розовый сад")
                         .toString()
         );
     }
@@ -70,8 +70,7 @@ class CocktailBotApplicationTests {
     @Test
     void findCocktailByIngredientsAll() {
         List<String> ingredientNames = new ArrayList<>();
-        ingredientNames.add("лайм");
-        ingredientNames.add("лед в кубиках");
+        ingredientNames.add("джин");
         ingredientNames.add("тоник");
         System.out.println(cocktailService.findByIngredientsAll(ingredientNames));
     }
