@@ -20,6 +20,11 @@ public class CocktailServiceImpl implements CocktailService{
     }
 
     @Override
+    public Cocktail findByName(String name){
+        return repository.findByName(name);
+    };
+
+    @Override
     public List<String> findByIngredientsAll(List<String> ingredientsNames) {
         StringBuilder regexp = new StringBuilder();
         for (String ingredientName : ingredientsNames) {

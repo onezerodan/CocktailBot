@@ -99,6 +99,7 @@ public class Cocktail {
                     .append(ingredient.getName())
                     .append(" ")
                     .append(ingredient.getAmount())
+                    .append(" ")
                     .append(ingredient.getUnit())
                     .append("\n");
         }
