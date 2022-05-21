@@ -45,10 +45,10 @@ public class TgBot extends TelegramLongPollingBot {
 
         if (text.startsWith("/search")) {
 
-            sendMessage(chatId, searchCocktailByName(text.replace("/search ", "")));
+            sendMessage(chatId, searchCocktailByName(text.replace("/search ", "").replace("ё", "е")));
         }
         if (text.startsWith("/ingr")) {
-            sendMessage(chatId, searchCocktailByIngredients(text.replace("/ingr ", "")));
+            sendMessage(chatId, searchCocktailByIngredients(text.replace("/ingr ", "").replace("ё", "е")));
         }
         sendMessage(chatId, text);
     }
