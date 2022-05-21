@@ -49,20 +49,13 @@ class CocktailBotApplicationTests {
         System.out.println(cocktailRepository.findByName("Президент").toString());
     }
 
-    @Test
-    void findCocktailByIngredients() {
-        List<String> ingredientNames = new ArrayList<>();
-        ingredientNames.add("ликер корицы");
-        ingredientNames.add("лимонный сок");
-        System.out.println(
-                cocktailRepository.findByIngredientsName(ingredientNames));
-    }
+
 
     @Test
     void findCocktailByName() {
         System.out.println(
-                cocktailRepository
-                        .findCocktailByName("розовый сад")
+                cocktailService
+                        .findByName("Маргарита")
                         .toString()
         );
     }

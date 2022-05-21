@@ -26,7 +26,7 @@ public class Parser {
 
     Logger log = LoggerFactory.getLogger(Parser.class);
     CocktailService cocktailService;
-    Properties properties =  new PropertiesLoader().getProperties();
+    Properties properties =  new PropertiesLoader().getProperties("parser");
 
     public Parser(CocktailService cocktailService) {this.cocktailService = cocktailService; }
 
