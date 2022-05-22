@@ -33,14 +33,4 @@ public class CocktailController {
         log.info("Cocktails saved to database.");
 
     }
-
-    @GetMapping(value = "/startBot")
-    public void startBot() {
-        try {
-            TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
-            api.registerBot(new TgBot(cocktailService));
-        } catch (TelegramApiException e) {
-            log.error(e.getMessage());
-        }
-    }
 }
