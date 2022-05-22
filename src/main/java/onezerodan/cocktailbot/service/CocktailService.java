@@ -8,7 +8,8 @@ public interface CocktailService {
 
 
     boolean existsByName(String name);
-    Cocktail findByName(String name);
+    List<Cocktail> findByName(String name);
+    List<Cocktail> suggestIfNotFound(String name);
     List<String> findByIngredientsAll(List<String> ingredientsName);
 
     void save(Cocktail cocktail);

@@ -1,7 +1,6 @@
 package onezerodan.cocktailbot;
 
 import onezerodan.cocktailbot.model.Cocktail;
-import onezerodan.cocktailbot.model.Ingredient;
 import onezerodan.cocktailbot.repository.CocktailRepository;
 import onezerodan.cocktailbot.service.CocktailService;
 import org.junit.jupiter.api.Test;
@@ -46,19 +45,46 @@ class CocktailBotApplicationTests {
 
     @Test
     void findByNameIgnoreCase() {
-        System.out.println(cocktailRepository.findByName("Президент").toString());
+        System.out.println(cocktailRepository.findAllByName("Президент").toString());
     }
 
 
 
     @Test
     void findCocktailByName() {
-        System.out.println(
-                cocktailService
-                        .findByName("Маргарита")
-                        .toString()
-        );
+
+        String name = "маргарита";
+        List<Cocktail> cocktails = cocktailService.findByName(name);
+        if (cocktails.size() == 1) {
+            for (Cocktail cocktail : cocktails) {
+                System.out.println(cocktail.toString());
+            }
+        }
+        if (cocktails.size() > 1) {
+            System.out.println("По вашему запросу найдено несколько коктейлей:");
+            for (Cocktail cocktail : cocktails) {
+                System.out.println(cocktail.getName());
+            }
+        }
+
+        else {
+
+            List<Cocktail> suggestions = cocktailService.suggestIfNotFound(name);
+            if (suggestions.size() > 0) {
+                System.out.println("\nВозможно, вы имели ввиду: ");
+                for (Cocktail cocktail : suggestions) {
+                    System.out.println(cocktail.getName());
+                }
+            }
+            else {
+                System.out.println("По вашему запросу ничего не найдено");
+            }
+        }
+
+
     }
+
+
 
     @Test
     void findCocktailByIngredientsAll() {

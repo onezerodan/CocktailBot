@@ -1,7 +1,6 @@
 package onezerodan.cocktailbot.repository;
 
 import onezerodan.cocktailbot.model.Cocktail;
-import onezerodan.cocktailbot.model.Ingredient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +17,13 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
     @Query (value = "select name from cocktail where ingredient_names ~*  :regexp", nativeQuery = true)
     List<String> findByIngredientsNameAllRegexp(@Param("regexp") String regexp);
 
-    Cocktail findByName(String name);
+    @Query (value = "select * from cocktail where name ~* :regexp", nativeQuery = true)
+    List<Cocktail> findByNameIfNotFound(@Param("regexp") String regexp);
+
+    @Query (value = "select * from cocktail where name ~* :regexp", nativeQuery = true)
+    List<Cocktail> findAllByName(@Param("regexp") String regexp);
+
+    List<Cocktail> findByName(String name);
 
     String findCocktailByIngredientsIn(Collection<String> ingredients);
 
