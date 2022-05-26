@@ -14,8 +14,8 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
 
     boolean existsByName(String name);
 
-    @Query (value = "select name from cocktail where ingredient_names ~*  :regexp", nativeQuery = true)
-    List<String> findByIngredientsNameAllRegexp(@Param("regexp") String regexp);
+    @Query (value = "select * from cocktail where ingredient_names ~*  :regexp", nativeQuery = true)
+    List<Cocktail> findByIngredientsNameAllRegexp(@Param("regexp") String regexp);
 
     @Query (value = "select * from cocktail where name ~* :regexp", nativeQuery = true)
     List<Cocktail> findByNameIfNotFound(@Param("regexp") String regexp);

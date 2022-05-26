@@ -36,7 +36,7 @@ public class CocktailServiceImpl implements CocktailService{
     }
 
     @Override
-    public List<String> findByIngredientsAll(List<String> ingredientsNames) {
+    public List<Cocktail> findByIngredientsAll(List<String> ingredientsNames) {
         StringBuilder regexp = new StringBuilder();
         for (String ingredientName : ingredientsNames) {
             regexp.append("(?=.*")
