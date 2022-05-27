@@ -118,12 +118,12 @@ public class Cocktail {
             tagSeparator = " / ";
         }
         StringBuilder answer = new StringBuilder();
-        answer.append(name).append("\n\n")
-                .append("Ингридиенты:").append("\n")
+        answer.append("🍹 " + name).append("\n\n")
+                .append("🍊 Ингридиенты:").append("\n")
                 .append(ingredientsStr).append("\n")
-                .append("Способ приготовления:").append("\n")
+                .append("👨‍🍳 Способ приготовления:").append("\n")
                 .append(recipe).append("\n")
-                .append("Тэги: ").append("\n")
+                .append("🔖 Тэги: ").append("\n")
                 .append(tagsStr);
         return answer.toString();
     }
