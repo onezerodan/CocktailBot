@@ -52,6 +52,9 @@ public class Parser {
             Cocktail cocktail = new Cocktail();
 
             String cocktailName = getCocktailName(cocktailElement);
+            if (cocktailName.equals("")){
+                continue;
+            }
 
 
             if (cocktailService.existsByName(cocktailName)){
@@ -85,6 +88,7 @@ public class Parser {
                 }
                 //continue;
             }
+
 
 
             Element ingredientsTable = cocktailDoc.getElementsByClass("ingredient-tables").select("table").first();
