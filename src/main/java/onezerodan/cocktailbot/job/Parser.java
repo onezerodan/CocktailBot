@@ -96,6 +96,7 @@ public class Parser {
 
             Elements tagElements = cocktailDoc.getElementsByClass("tag");
             cocktail.setTags(getCocktailTags(tagElements));
+            cocktail.setTag_names(getCocktailTagNames(tagElements));
 
             Element stepsTable = cocktailDoc.getElementsByClass("steps").first();
             Elements steps = stepsTable.getElementsByTag("li");
@@ -135,6 +136,19 @@ public class Parser {
             SEPARATOR = ",";
         }
         return result.toString();
+    }
+
+    private String getCocktailTagNames(Elements tagElements) {
+        StringBuilder result = new StringBuilder();
+        String SEPARATOR = "";
+        for (Element tagElement : tagElements) {
+            String tagName = tagElement.text().toLowerCase();
+            result.append(SEPARATOR)
+                    .append(tagName);
+            SEPARATOR = "/";
+        }
+        return result.toString();
+
     }
 
     private List<Ingredient> getCocktailIngredients(Element ingredientsTable) {

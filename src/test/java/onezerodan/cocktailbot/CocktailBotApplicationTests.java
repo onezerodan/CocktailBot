@@ -54,32 +54,7 @@ class CocktailBotApplicationTests {
     void findCocktailByName() {
 
         String name = "маргарита";
-        List<Cocktail> cocktails = cocktailService.findByName(name);
-        if (cocktails.size() == 1) {
-            for (Cocktail cocktail : cocktails) {
-                System.out.println(cocktail.toString());
-            }
-        }
-        if (cocktails.size() > 1) {
-            System.out.println("По вашему запросу найдено несколько коктейлей:");
-            for (Cocktail cocktail : cocktails) {
-                System.out.println(cocktail.getName());
-            }
-        }
-
-        else {
-
-            List<Cocktail> suggestions = cocktailService.suggestIfNotFound(name);
-            if (suggestions.size() > 0) {
-                System.out.println("\nВозможно, вы имели ввиду: ");
-                for (Cocktail cocktail : suggestions) {
-                    System.out.println(cocktail.getName());
-                }
-            }
-            else {
-                System.out.println("По вашему запросу ничего не найдено");
-            }
-        }
+        System.out.println(cocktailService.findByName(name));
 
 
     }
@@ -92,6 +67,11 @@ class CocktailBotApplicationTests {
         ingredientNames.add("джин");
         ingredientNames.add("тоник");
         System.out.println(cocktailService.findByIngredientsAll(ingredientNames));
+    }
+
+    @Test
+    void getAllAvailableTags(){
+        System.out.println(cocktailService.getAllAvailableTags());
     }
 
 

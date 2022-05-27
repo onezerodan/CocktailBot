@@ -46,6 +46,9 @@ public class Cocktail {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Ingredient> ingredients = new ArrayList<>();
 
+    private String ingredient_names;
+
+
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
@@ -64,18 +67,21 @@ public class Cocktail {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<CocktailTag> tags = new ArrayList<>();
 
+    private String tag_names;
+
     @Column(length=1024)
     private String recipe;
 
-    public String getIngredient_names() {
-        return ingredient_names;
+
+    public void setTag_names(String tag_names) {
+        this.tag_names = tag_names;
     }
 
     public void setIngredient_names(String ingredient_names) {
         this.ingredient_names = ingredient_names;
     }
 
-    private String ingredient_names;
+
 
 
     public List<CocktailTag> getTags() {
