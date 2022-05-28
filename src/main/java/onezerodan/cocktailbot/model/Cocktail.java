@@ -119,7 +119,7 @@ public class Cocktail {
         }
         StringBuilder answer = new StringBuilder();
         answer.append("🍹 " + name).append("\n\n")
-                .append("🍊 Ингридиенты:").append("\n")
+                .append("🍊 Ингредиенты:").append("\n")
                 .append(ingredientsStr).append("\n")
                 .append("👨‍🍳 Способ приготовления:").append("\n")
                 .append(recipe).append("\n")
