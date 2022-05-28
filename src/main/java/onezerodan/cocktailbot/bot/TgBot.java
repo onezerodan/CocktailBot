@@ -19,14 +19,7 @@ public class TgBot extends TelegramLongPollingBot {
 
     Logger log = LoggerFactory.getLogger(TgBot.class);
     Properties properties = new PropertiesLoader().getProperties("bot");
-    enum UserStates {
-        IDLE,
-        SEARCHING_BY_NAME,
-        SEARCHING_BY_INGREDIENTS,
-        SEARCHING_BY_TAGS
-    }
-    Map<Long, UserStates> userStates = new HashMap<>();
-
+    Map<Long, UserStates> userStatesMap = new HashMap<>();
     public TgBot(CocktailService cocktailService) {
         this.cocktailService = cocktailService;
     }
@@ -47,8 +40,6 @@ public class TgBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
-
-
         if (update.hasCallbackQuery()) {
             Long chatId = update.getCallbackQuery().getFrom().getId();
             String callbackQuery = update.getCallbackQuery().getData();
@@ -62,17 +53,17 @@ public class TgBot extends TelegramLongPollingBot {
                 String searchParameter = callbackQuery.split("_")[1];
                 switch (searchParameter){
                     case "byName":
-                        userStates.put(chatId, UserStates.SEARCHING_BY_NAME);
+                        userStatesMap.put(chatId, UserStates.SEARCHING_BY_NAME);
                         sendMessage(chatId, "Введите название интересующего коктейля.");
                         break;
 
                     case "byIngredients":
-                        userStates.put(chatId, UserStates.SEARCHING_BY_INGREDIENTS);
+                        userStatesMap.put(chatId, UserStates.SEARCHING_BY_INGREDIENTS);
                         sendMessage(chatId, "Введите интересующие ингредиенты через запятую.");
                         break;
 
                     case "byTags":
-                        userStates.put(chatId, UserStates.SEARCHING_BY_TAGS);
+                        userStatesMap.put(chatId, UserStates.SEARCHING_BY_TAGS);
                         sendMessage(chatId, "Введите интересующие тэги через запятую.\nЧтобы посмотреть список всех доступных тэгов, отправьте команду \n/tags");
                         break;
                 }
@@ -87,19 +78,19 @@ public class TgBot extends TelegramLongPollingBot {
             String text = update.getMessage().getText().toLowerCase();
             log.info("\n---NEW MESSAGE---\nFROM: "+chatId +"\nTEXT: " + text);
 
-            if (userStates.get(chatId) != null) {
-                switch (UserStates.valueOf(userStates.get(chatId).toString())) {
+            if (userStatesMap.get(chatId) != null) {
+                switch (UserStates.valueOf(userStatesMap.get(chatId).toString())) {
                     case SEARCHING_BY_NAME:
                         searchCocktailsByName(text, chatId);
-                        userStates.put(chatId, UserStates.IDLE);
+                        userStatesMap.put(chatId, UserStates.IDLE);
                         break;
                     case SEARCHING_BY_INGREDIENTS:
                         searchCocktailByIngredients(text, chatId);
-                        userStates.put(chatId, UserStates.IDLE);
+                        userStatesMap.put(chatId, UserStates.IDLE);
                         break;
                     case SEARCHING_BY_TAGS:
                         searchCocktailByTags(text, chatId);
-                        userStates.put(chatId, UserStates.IDLE);
+                        userStatesMap.put(chatId, UserStates.IDLE);
                         break;
                 }
             }
@@ -114,7 +105,7 @@ public class TgBot extends TelegramLongPollingBot {
                 break;
                 case "/tags":
                     sendMessage(chatId, "Список всех доступных тэгов:\n" + String.join("\n", cocktailService.getAllAvailableTags()));
-                    userStates.put(chatId, UserStates.SEARCHING_BY_TAGS);
+                    userStatesMap.put(chatId, UserStates.SEARCHING_BY_TAGS);
                     break;
 
             }
