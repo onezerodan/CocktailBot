@@ -51,8 +51,8 @@ public class TgBot extends TelegramLongPollingBot {
 
         if (update.hasCallbackQuery()) {
             Long chatId = update.getCallbackQuery().getFrom().getId();
-
             String callbackQuery = update.getCallbackQuery().getData();
+            log.info("\n---NEW CALLBACK---\nFROM: "+chatId +"\nDATA: " + callbackQuery);
 
             if (callbackQuery.startsWith("ck")) {
                 String cocktailName = update.getCallbackQuery().getData().split("_")[1];
@@ -85,6 +85,7 @@ public class TgBot extends TelegramLongPollingBot {
 
             Long chatId = update.getMessage().getChatId();
             String text = update.getMessage().getText().toLowerCase();
+            log.info("\n---NEW MESSAGE---\nFROM: "+chatId +"\nTEXT: " + text);
 
             if (userStates.get(chatId) != null) {
                 switch (UserStates.valueOf(userStates.get(chatId).toString())) {
