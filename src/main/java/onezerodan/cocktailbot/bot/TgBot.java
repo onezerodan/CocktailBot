@@ -14,12 +14,13 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TgBot extends TelegramLongPollingBot {
 
     Logger log = LoggerFactory.getLogger(TgBot.class);
     Properties properties = new PropertiesLoader().getProperties("bot");
-    Map<Long, UserStates> userStatesMap = new HashMap<>();
+    ConcurrentHashMap<Long, UserStates> userStatesMap = new ConcurrentHashMap<>();
     public TgBot(CocktailService cocktailService) {
         this.cocktailService = cocktailService;
     }
@@ -40,60 +41,16 @@ public class TgBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
+
         if (update.hasCallbackQuery()) {
-            Long chatId = update.getCallbackQuery().getFrom().getId();
-            String callbackQuery = update.getCallbackQuery().getData();
-            log.info("\n---NEW CALLBACK---\nFROM: "+chatId +"\nDATA: " + callbackQuery);
-
-            if (callbackQuery.startsWith("ck")) {
-                String cocktailName = update.getCallbackQuery().getData().split("_")[1];
-                searchCocktailByName(cocktailName, chatId);
-            }
-            else if (callbackQuery.startsWith("search")) {
-                String searchParameter = callbackQuery.split("_")[1];
-                switch (searchParameter){
-                    case "byName":
-                        userStatesMap.put(chatId, UserStates.SEARCHING_BY_NAME);
-                        sendMessage(chatId, "Введите название интересующего коктейля.");
-                        break;
-
-                    case "byIngredients":
-                        userStatesMap.put(chatId, UserStates.SEARCHING_BY_INGREDIENTS);
-                        sendMessage(chatId, "Введите интересующие ингредиенты через запятую.");
-                        break;
-
-                    case "byTags":
-                        userStatesMap.put(chatId, UserStates.SEARCHING_BY_TAGS);
-                        sendMessage(chatId, "Введите интересующие тэги через запятую.\nЧтобы посмотреть список всех доступных тэгов, отправьте команду \n/tags");
-                        break;
-                }
-
-
-            }
+            handleCallbackQuery(update);
         }
 
-        else {
+        else if (update.hasMessage()){
 
             Long chatId = update.getMessage().getChatId();
             String text = update.getMessage().getText().toLowerCase();
             log.info("\n---NEW MESSAGE---\nFROM: "+chatId +"\nTEXT: " + text);
-
-            if (userStatesMap.get(chatId) != null) {
-                switch (UserStates.valueOf(userStatesMap.get(chatId).toString())) {
-                    case SEARCHING_BY_NAME:
-                        searchCocktailsByName(text, chatId);
-                        userStatesMap.put(chatId, UserStates.IDLE);
-                        break;
-                    case SEARCHING_BY_INGREDIENTS:
-                        searchCocktailByIngredients(text, chatId);
-                        userStatesMap.put(chatId, UserStates.IDLE);
-                        break;
-                    case SEARCHING_BY_TAGS:
-                        searchCocktailByTags(text, chatId);
-                        userStatesMap.put(chatId, UserStates.IDLE);
-                        break;
-                }
-            }
 
             switch (text) {
                 case "/start":
@@ -102,29 +59,72 @@ public class TgBot extends TelegramLongPollingBot {
                     menuButtons.put("🍊Поиск по ингредиентам", "search_byIngredients");
                     menuButtons.put("🔖Поиск по тэгам", "search_byTags");
                     sendMessageWithInlineKeyboard(chatId, "Салют! Ты можешь искать коктейли по названиям, ингредиентам и тэгам! \nВыбери способ поиска:", menuButtons);
-                break;
+                    return;
+
                 case "/tags":
                     sendMessage(chatId, "Список всех доступных тэгов:\n" + String.join("\n", cocktailService.getAllAvailableTags()));
                     userStatesMap.put(chatId, UserStates.SEARCHING_BY_TAGS);
-                    break;
+                    return;
 
             }
 
-
-            /*
-            if (text.startsWith("/search")) {
-                searchCocktailByName(text.replace("/search ", "").replace("ё", "е"), chatId);
+            if (userStatesMap.get(chatId) != null) {
+                switch (UserStates.valueOf(userStatesMap.get(chatId).toString())) {
+                    case SEARCHING_BY_NAME:
+                        searchCocktailsByName(text, chatId);
+                        userStatesMap.remove(chatId);
+                        break;
+                    case SEARCHING_BY_INGREDIENTS:
+                        searchCocktailByIngredients(text, chatId);
+                        userStatesMap.remove(chatId);
+                        break;
+                    case SEARCHING_BY_TAGS:
+                        searchCocktailByTags(text, chatId);
+                        userStatesMap.remove(chatId);
+                        break;
+                }
             }
-            if (text.startsWith("/ingr")) {
-                sendMessage(chatId, searchCocktailByIngredients(text.replace("/ingr ", "").replace("ё", "е")));
-            }
 
-             */
+
+
         }
 
     }
 
 
+    private void handleCallbackQuery(Update update) {
+
+        Long chatId = update.getCallbackQuery().getFrom().getId();
+        String callbackQuery = update.getCallbackQuery().getData();
+
+        log.info("\n---NEW CALLBACK---\nFROM: "+chatId +"\nDATA: " + callbackQuery);
+
+        if (callbackQuery.startsWith("ck")) {
+            String cocktailName = update.getCallbackQuery().getData().split("_")[1];
+            searchCocktailByName(cocktailName, chatId);
+        }
+        else if (callbackQuery.startsWith("search")) {
+            String searchParameter = callbackQuery.split("_")[1];
+            switch (searchParameter){
+                case "byName":
+                    userStatesMap.put(chatId, UserStates.SEARCHING_BY_NAME);
+                    sendMessage(chatId, "Введите название интересующего коктейля.");
+                    break;
+
+                case "byIngredients":
+                    userStatesMap.put(chatId, UserStates.SEARCHING_BY_INGREDIENTS);
+                    sendMessage(chatId, "Введите интересующие ингредиенты через запятую.");
+                    break;
+
+                case "byTags":
+                    userStatesMap.put(chatId, UserStates.SEARCHING_BY_TAGS);
+                    sendMessage(chatId, "Введите интересующие тэги через запятую.\nЧтобы посмотреть список всех доступных тэгов, отправьте команду \n/tags");
+                    break;
+            }
+
+
+        }
+    }
 
     private void sendCocktailsInline(List<Cocktail> cocktails, Long chatId, String text){
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -141,7 +141,6 @@ public class TgBot extends TelegramLongPollingBot {
             rowsInline.add(rowInline);
         }
 
-
         // Randomize each output
         Collections.shuffle(rowsInline);
         markupInline.setKeyboard(rowsInline);
@@ -150,8 +149,6 @@ public class TgBot extends TelegramLongPollingBot {
         msg.setChatId(chatId.toString());
         msg.setText(text);
         msg.setReplyMarkup(markupInline);
-
-
 
         try{
             execute(msg);
@@ -162,10 +159,10 @@ public class TgBot extends TelegramLongPollingBot {
 
     }
 
-
     private void searchCocktailByName(String name, Long chatId) {
         sendMessage(chatId, cocktailService.findByName(name).toString());
     }
+
     private void searchCocktailsByName(String name, Long chatId) {
 
         List<Cocktail> cocktails = cocktailService.findAllByName(name);
@@ -175,12 +172,6 @@ public class TgBot extends TelegramLongPollingBot {
             }
         }
         else if (cocktails.size() > 1) {
-            //sendMessage(chatId,"По вашему запросу найдено несколько коктейлей:");
-            /*
-            for (Cocktail cocktail : cocktails) {
-                sendMessage(chatId, cocktail.getName());
-            }
-             */
             sendCocktailsInline(cocktails, chatId, "По вашему запросу найдено несколько коктейлей:");
         }
 
