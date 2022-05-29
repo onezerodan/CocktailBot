@@ -35,13 +35,7 @@ public class CocktailServiceImpl implements CocktailService{
 
     @Override
     public List<Cocktail> suggestIfNotFound(String name) {
-        StringBuilder regexp = new StringBuilder();
-        for (Character ch : name.replace(" ", "").toCharArray()) {
-            regexp.append("(?=.*")
-                    .append(ch)
-                    .append(")");
-        }
-        return repository.findByNameIfNotFound(regexp.toString());
+        return repository.suggestByName(name);
     }
 
     @Override

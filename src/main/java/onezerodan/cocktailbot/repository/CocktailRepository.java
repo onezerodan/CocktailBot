@@ -23,10 +23,8 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
     @Query (value = "select * from cocktail where ingredient_names ~*  :regexp", nativeQuery = true)
     List<Cocktail> findByIngredientsNameAllRegexp(@Param("regexp") String regexp);
 
-
-
-    @Query (value = "select * from cocktail where name ~* :regexp", nativeQuery = true)
-    List<Cocktail> findByNameIfNotFound(@Param("regexp") String regexp);
+    @Query (value = "select * from cocktail where levenshtein(name, :name) <= 2", nativeQuery = true)
+    List<Cocktail> suggestByName(@Param("name") String name);
 
     @Query (value = "select * from cocktail where name ~* :regexp", nativeQuery = true)
     List<Cocktail> findAllByName(@Param("regexp") String regexp);

@@ -179,10 +179,7 @@ public class TgBot extends TelegramLongPollingBot {
 
             List<Cocktail> suggestions = cocktailService.suggestIfNotFound(name);
             if (suggestions.size() > 0) {
-                sendMessage(chatId,"Возможно, вы имели ввиду: ");
-                for (Cocktail cocktail : suggestions) {
-                    sendMessage(chatId, cocktail.getName());
-                }
+                sendCocktailsInline(suggestions, chatId, "Возможно, вы имели ввиду: ");
             }
             else {
                 sendMessage(chatId, "По вашему запросу ничего не найдено.");
