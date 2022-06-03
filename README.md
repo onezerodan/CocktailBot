@@ -101,7 +101,7 @@ cd into cloned repo and run program by
 There is REST controller with `updateCocktailDb` mapping for database update.  
 So you can run `curl <ip>:<port>/updateCocktailDb` to update db.
 
-## Build using
+## Built using
 - OpenJDK 11
 - [Maven](https://maven.apache.org)
 - [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
