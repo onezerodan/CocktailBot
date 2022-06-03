@@ -1,11 +1,25 @@
-# Cocktail Telegram bot
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=200px height=200px src="https://i.imgur.com/RaZ0VEh.png" alt="Bot logo"></a>
+</p>
+<h3 align="center">Cocktail Telegram bot</h3> 
+
+<div align="center">  
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 [![Platform](https://img.shields.io/badge/platform-Telegram-blue.svg)](https://t.me/CocktailSearchBot)
-[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](/LICENSE)  
+[Link](https://t.me/CocktailSearchBot)
 
+</div>
 
-Bot for searching cocktails by their names, ingredients and tags.  
+<p align="center"> Bot for searching cocktails by their names, ingredients and tags. 
+    <br> 
+</p>
+
+---
+
+ 
 **NOTE!** Only Russian language is supported.
 
 
@@ -19,8 +33,9 @@ Bot will search cocktail by ingredients, separated by comma
 Bot will search cocktail by tags, separated by comma
 
 ## How database works
+One-to-many relationship ( cocktail - ingredient, cocktail - tag ).  
 There are 3 tables: 
-### cocktail
+#### cocktail
 Example: 
 
 | id  | name    | ingredient_names                                    | tag_names                                  | recipe                                                                                                                                                                         |
@@ -29,7 +44,7 @@ Example:
 
 **NOTE!** See temporary  [workaround](#redundant-columns-for-tags-and-ingredients) for details.
 
-### ingredient
+#### ingredient
 Example:  
 
 | id  | name           | amount | unit | 🔑 cocktail_id | 🔑 cocktail_name  |
@@ -39,7 +54,7 @@ Example:
 
 
 
-### tag
+#### tag
 Example:
 
 | id  | name     | 🔑 cocktail_id | 🔑 cocktail_name |
@@ -47,6 +62,8 @@ Example:
 | 1   | крепкие  | 1              | дайкири          |
 | 2   | классика | 1              | дайкири          |
 
+### Parser
+Parser will parse one url, which contains all cocktails. Then all cocktail data will be parsed and saved to database.
 
 
 ## Getting Started
@@ -55,6 +72,25 @@ Example:
 
 ### Installing
 Simple clone this repository :) 
+
+### Configuring
+#### Database 
+Configure [application.properties](src/main/resources/application.properties)   
+`spring.datasource.url` - url to your PostgreSQL database  
+`spring.datasource.username` - database username  
+`spring.datasource.password` - database password
+
+#### Parser 
+Configure [parser.properties](src/main/resources/parser.properties)  
+**NOTE!** Only one site is supported, so there is no need to configure parser manually.  
+`domain` - main url  
+`fullCocktailLink` - url, which contains all cocktails.
+
+#### Bot 
+Configure [bot.properties](src/main/resources/bot.properties)  
+`token` - your Telegram bot token  
+`username` - your Telegram bot username
+
 
 ## Usage
 ### Run program
@@ -71,6 +107,9 @@ So you can run `curl <ip>:<port>/updateCocktailDb` to update db.
 - [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
 - [Spring Boot](https://spring.io/projects/spring-boot)
 - [PostgreSQL](https://www.postgresql.org)
+- [Telegram Bot Java Library](https://github.com/rubenlagus/TelegramBots)
+- [Jsoup](https://jsoup.org)
+
 
 ## Workarounds
 This project is still under development, so there are some temporary workarounds, which should be fixed in the future.
