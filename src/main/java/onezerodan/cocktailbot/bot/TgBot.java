@@ -202,7 +202,7 @@ public class TgBot extends TelegramLongPollingBot {
         List<Cocktail> cocktails = cocktailService.findAllByName(name);
         if (cocktails.size() == 1) {
             for (Cocktail cocktail : cocktails) {
-                sendMessage(chatId, cocktail.toString());
+                sendCocktail(cocktail, chatId);
             }
         }
         else if (cocktails.size() > 1) {
