@@ -80,6 +80,9 @@ Configure [application.properties](src/main/resources/application.properties)
 `spring.datasource.username` - database username  
 `spring.datasource.password` - database password
 
+Also, you need to install ***fuzzystrmatch*** extension to PostgreSQL database:  
+simple execute query: `CREATE EXTENSION fuzzystrmatch;`
+
 #### Parser 
 Configure [parser.properties](src/main/resources/parser.properties)  
 **NOTE!** Only one site is supported, so there is no need to configure parser manually.  
