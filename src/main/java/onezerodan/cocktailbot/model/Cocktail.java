@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "cocktail")
 @IdClass(CocktailId.class)
@@ -126,6 +127,21 @@ public class Cocktail {
                 .append("🔖 Тэги: ").append("\n")
                 .append(tagsStr);
         return answer.toString();
+    }
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cocktail cocktail = (Cocktail) o;
+        return Objects.equals(id, cocktail.id) && Objects.equals(name, cocktail.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 
     public Long getId() { return id; }
