@@ -34,6 +34,11 @@ public class CocktailServiceImpl implements CocktailService{
     ;
 
     @Override
+    public Cocktail findById(long id) {
+        return repository.findById(id);
+    }
+
+    @Override
     public List<Cocktail> suggestIfNotFound(String name) {
         return repository.suggestByName(name);
     }

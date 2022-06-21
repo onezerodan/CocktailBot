@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -92,8 +93,8 @@ public class TgBot extends TelegramLongPollingBot {
         log.info("\n---NEW CALLBACK---\nFROM: "+chatId +"\nDATA: " + callbackQuery);
 
         if (callbackQuery.startsWith("ck_")) {
-            String cocktailName = update.getCallbackQuery().getData().split("_")[1];
-            searchCocktailByName(cocktailName, chatId);
+            long cocktailId = Long.parseLong(update.getCallbackQuery().getData().split("_")[1]);
+            searchCocktailById(cocktailId, chatId);
         }
 
         else if (callbackQuery.startsWith("goto_")) {
@@ -127,7 +128,7 @@ public class TgBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendCocktailsInline(List<Cocktail> cocktails, Long chatId, String text){
+    private void sendCocktailsInline(List<Cocktail> cocktails, Long chatId, String text)  {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
@@ -137,7 +138,7 @@ public class TgBot extends TelegramLongPollingBot {
             InlineKeyboardButton btn = new InlineKeyboardButton();
             btn.setText(cocktail.getName());
             //ck (shortened form of cocktail), because of telegram callback size limit
-            btn.setCallbackData("ck_" + cocktail.getName());
+            btn.setCallbackData("ck_" + cocktail.getId());
             rowInline.add(btn);
             rowsInline.add(rowInline);
         }
@@ -161,6 +162,10 @@ public class TgBot extends TelegramLongPollingBot {
 
     private void searchCocktailByName(String name, Long chatId) {
         sendCocktail(cocktailService.findByName(name), chatId);
+    }
+
+    private void searchCocktailById(Long cocktailId, Long chatId) {
+        sendCocktail(cocktailService.findById(cocktailId), chatId);
     }
 
     private void sendCocktail(Cocktail cocktail, Long chatId) {

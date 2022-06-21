@@ -32,6 +32,9 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
     @Query (value = "select * from cocktail  where name = :name", nativeQuery = true)
     Cocktail findByName(@Param("name") String name);
 
+    @Query(value = "select * from cocktail  where id = :cocktailId", nativeQuery = true)
+    Cocktail findById(@Param(("cocktailId")) long id);
+
     String findCocktailByIngredientsIn(Collection<String> ingredients);
 
 
