@@ -6,7 +6,7 @@
 
 <div align="center">  
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![Status](https://img.shields.io/badge/status-inactive-yellow.svg)]()
 [![Platform](https://img.shields.io/badge/platform-Telegram-blue.svg)](https://t.me/CocktailSearchBot)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](/LICENSE.md)  
 [Link](https://t.me/CocktailSearchBot)
